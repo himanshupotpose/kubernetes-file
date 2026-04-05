@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+  labels: 
+    app: 123-app
+spec:
+  strategy:
+    type: RollingUpdate
+  replicas: 3
+  template:
+    metadata: 
+      labels:
+        app: 123-app
+    spec:
+      containers:
+        - name: my-c
+          image: httpd
+          ports:
+            - containerPort: 80
+  selector:
+    # matchLabels:
+    #   app: rs-app
+    matchExpressions:
+      - {key: app, operator: In, values: [cbz-app, 123-app]}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: abc-svc
+  labels:
+    app: 123-app
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: NodePort
+  selector:
+    app: 123-app
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+ 
