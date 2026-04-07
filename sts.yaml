@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: my-sts
+  labels:
+    app: sts-app
+
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: sts-app
+
+    spec:
+      containers:
+        - name: my-c
+          image: mysql:latest
+          ports:
+            - containerPort: 3306
+
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: my-cm
+                  key: mysql_pass
+
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: my-cm
+                  key: mysql_user
+
+
+selector:
+  matchLabels:
+    app: sts-app
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-svc
+  labels:
+    app: sts-app
+
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+
+  type: NodePort
+  selector:
+    app: sts-app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                 
+          
