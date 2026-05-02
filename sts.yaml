@@ -1,75 +1,47 @@
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: my-sts
-  labels:
-    app: sts-app
-
-spec:
-  replicas: 3
-  template:
-    metadata:
-      labels:
-        app: sts-app
-
-    spec:
-      containers:
-        - name: my-c
-          image: mysql:latest
-          ports:
-            - containerPort: 3306
-
-          env:
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  name: my-cm
-                  key: mysql_pass
-
-            - name: MYSQL_USER
-              valueFrom:
-                configMapKeyRef:
-                  name: my-cm
-                  key: mysql_user
-
-
-selector:
-  matchLabels:
-    app: sts-app
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: my-svc
-  labels:
-    app: sts-app
-
+  name: mysql
 spec:
-  ports:
-    - port: 80
-      targetPort: 80
-      protocol: TCP
-
-  type: NodePort
+  clusterIP: None
   selector:
-    app: sts-app
+    app: mysql
+  ports:
+    - port: 3306
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                 
-          
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  serviceName: "mysql"
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root123
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: gp2
+      resources:
+        requests:
+          storage: 1Gi
