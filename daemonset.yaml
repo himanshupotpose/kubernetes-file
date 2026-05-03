@@ -1,0 +1,19 @@
+apiVersion: apps/v1                 
+kind: DaemonSet
+metadata:
+  name: my-ds
+  labels: 
+    app: ds-app
+spec:
+  template:
+    metadata: 
+      labels:
+        app: ds-app
+    spec:
+      containers:
+        - name: my-c
+          image: httpd
+          ports:
+            - containerPort: 80
+  selector:
+    matchExpressions:
