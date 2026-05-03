@@ -23,3 +23,16 @@ spec:
     envFrom:
     - configMapRef:
         name: my-cm
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-svc
+spec:
+  type: NodePort
+  selector:
+    app: my-app   
+  ports:
+  - port: 80
+    targetPort: 80
