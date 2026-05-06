@@ -2,43 +2,35 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: myingress
-  labels:
-    app: myingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
   - http:
       paths:
-      - pathType: Prefix
-        path: "/"
+      - path: /
+        pathType: Prefix
         backend:
           service:
             name: myapp
-            port: 
+            port:
               number: 80
-  # - host: mobile.af049ffa178f7428aa19c4548441ee9f-1118725864.ap-southeast-1.elb.amazonaws.com
-  #   http:
-  #     paths:
-  #     - pathType: Prefix
-  #       path: "/"
-  #       backend:
-  #         service:
-  #           name: cbzapp
-  #           port: 
-  #             number: 80
-      - pathType: Prefix
-        path: "/mobile"
+
+      - path: /mobile
+        pathType: Prefix
         backend:
           service:
             name: cbzapp
-            port: 
+            port:
               number: 80
-      - pathType: Prefix
-        path: "/laptop"
+
+      - path: /laptop
+        pathType: Prefix
         backend:
           service:
             name: mylaptop
-            port: 
+            port:
               number: 80
 
 ---
@@ -89,6 +81,33 @@ metadata:
 spec:
   selector:
     app: cbzapp
+  ports:
+  - port: 80
+    targetPort: 80
+
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mylaptop
+  labels:
+    app: mylaptop
+spec:
+  containers:
+  - name: mylaptop
+    image: nginx
+    ports:
+      - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mylaptop
+spec:
+  selector:
+    app: mylaptop
   ports:
   - port: 80
     targetPort: 80
