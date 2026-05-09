@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hpa-deployment
+spec:
+  selector:
+    matchLabels:
+      app: hpa-app
+  template:
+    metadata:
+      labels:
+        app: hpa-app
+    spec:
+      containers:
+      - name: hpa-app
+        image: nginx
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "500m"
+          requests:
+            cpu: "200m"
+    
+---
+apiVersion: v1 
+kind: Service
+metadata:
+  name: lb-service
+  labels:
+    app: hpa-app
+spec:
+  selector:
+    app: hpa-app
+  ports:
+  - port: 80
+    targetPort: 80
+  type: LoadBalancer
