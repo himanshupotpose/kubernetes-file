@@ -4,15 +4,21 @@ metadata:
   name: myapp
   labels:
     app: my-app
+
 spec:
+  nodeSelector:
+    topology.kubernetes.io/zone: ap-south-1b
+
   containers:
   - name: myapp
     image: nginx
     ports:
       - containerPort: 80
+
     volumeMounts:
       - mountPath: "/usr/share/nginx/html"
         name: my-vol
+
   volumes:
     - name: my-vol
       persistentVolumeClaim:
